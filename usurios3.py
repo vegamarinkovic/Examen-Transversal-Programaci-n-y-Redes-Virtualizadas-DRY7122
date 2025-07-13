@@ -5,7 +5,8 @@ app = Flask(__name__)
 # Diccionario de usuarios válidos
 usuarios = {
     "Cristopher": "Robin2000",
-    "Daniella": "Vega1999"
+    "Daniella": "Vega1999",
+    "Marcelo": "Duoc2025"
 }
 
 # HTML del formulario
