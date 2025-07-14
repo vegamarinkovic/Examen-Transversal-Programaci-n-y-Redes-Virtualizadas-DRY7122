@@ -1,0 +1,29 @@
+---
+- name: INSTALL APACHE AND CONFIGURE PORT 9999
+  hosts: localhost
+  become: yes
+  gather_facts: yes
+
+  tasks:
+    - name: INSTALL APACHE2
+      apt:
+        name: apache2
+        state: present
+        update_cache: yes
+
+    - name: CHANGE APACHE PORT TO 9999
+      lineinfile:
+        path: /etc/apache2/ports.conf
+        regexp: '^Listen '
+        line: 'Listen 9999'
+
+    - name: CHANGE DEFAULT SITE PORT TO 9999
+      lineinfile:
+        path: /etc/apache2/sites-available/000-default.conf
+        regexp: '^<VirtualHost \*:'
+        line: '<VirtualHost *:9999>'
+
+    - name: RESTART APACHE
+      service:
+        name: apache2
+        state: restarted

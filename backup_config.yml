@@ -1,0 +1,35 @@
+---
+- name: Respaldar configuración del router
+  hosts: csr1000v
+  gather_facts: no
+  connection: network_cli
+
+  vars:
+    ansible_network_os: ios
+    ansible_user: admin
+    ansible_password: cisco123
+    backup_dir: "./backups"
+
+  tasks:
+    - name: Crear directorio de backups
+      become: yes
+      delegate_to: localhost
+      file:
+        path: "{{ backup_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Obtener running-config
+      ios_command:
+        commands: show running-config
+      register: config
+
+    - name: Generar timestamp
+      set_fact:
+        timestamp: "{{ lookup('pipe', 'date +%Y%m%d-%H%M%S') }}"
+
+    - name: Guardar backup
+      copy:
+        content: "{{ config.stdout[0] }}"
+        dest: "{{ backup_dir }}/csr1000v_config_{{ timestamp }}.cfg"
+      delegate_to: localhost
